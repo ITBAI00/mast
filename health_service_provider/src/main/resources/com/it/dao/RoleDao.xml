@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.dao.RoleDao">
+    <!--根据用户id查询该用户拥有的角色-->
+    <select id="findByUserId" parameterType="int" resultType="com.it.pojo.Role">
+        select r.*
+            from t_role r, t_user_role ur
+            where r.id = ur.role_id and ur.user_id = #{userId}
+    </select>
+
+    <!--角色分页查询并条件查询-->
+    <select id="selectByCondition" parameterType="string" resultType="com.it.pojo.Role">
+        select * from t_role
+        <if test="value != null and value.length > 0">
+            where name=#{value} or keyword=#{value}
+        </if>
+    </select>
+
+    <!--    添加角色和权限的关联-->
+    <insert id="setRoleandPermission" parameterType="hashmap">
+        insert into t_role_permission (role_id,permission_id) values(#{role_id},#{permission_id})
+    </insert>
+
+    <!--新增角色-->
+    <insert id="add" parameterType="com.it.pojo.Role">
+        <selectKey resultType="java.lang.Integer" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into t_role (name,keyword,description) values
+        (#{name},#{keyword},#{description})
+    </insert>
+
+    <!--查询所有权限信息-->
+    <select id="findAll" resultType="com.it.pojo.Permission">
+        select * from t_permission
+    </select>
+
+    <!--根据角色id回显数据-->
+    <select id="findById" resultType="com.it.pojo.Role">
+        select * from t_role where id=#{id}
+    </select>
+
+    <!--根据角色id查询权限id-->
+    <select id="findPermissionIdByOrleId" parameterType="int" resultType="int">
+        select permission_id from t_role_permission where role_id = #{id}
+    </select>
+
+    <!--删除关联-->
+    <delete id="deleteAssociation" parameterType="int">
+        delete from t_role_permission where role_id=#{id}
+    </delete>
+
+    <!--修改-->
+    <update id="edit" parameterType="com.it.pojo.Role">
+        update t_role
+        <set>
+            <if test="name!=null">
+                name=#{name},
+            </if>
+            <if test="keyword!=null">
+                keyword=#{keyword},
+            </if>
+            <if test="description!=null">
+                description=#{description},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <!--删除-->
+    <delete id="delete" parameterType="int">
+        delete from t_role where id=#{id}
+    </delete>
+
+</mapper>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <!-- 页面meta -->
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>传智健康</title>
+        <meta name="description" content="传智健康">
+        <meta name="keywords" content="传智健康">
+        <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+        <!-- 引入样式 -->
+        <link rel="stylesheet" href="../plugins/elementui/index.css">
+        <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="../css/style.css">
+        <script src="../plugins/echarts/echarts.js"></script>
+</head>
+<body class="hold-transition">
+<div id="app">
+    <div class="content-header">
+        <h1>会员管理<small>会员男女比例</small></h1>
+        <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>统计分析</el-breadcrumb-item>
+            <el-breadcrumb-item>会员男女数量</el-breadcrumb-item>
+        </el-breadcrumb>
+    </div>
+    <div class="app-container">
+               <div class="box">
+                   <div>
+                       <el-row>
+                           <el-button type="primary" @click="findSex()" >按性别分类</el-button>
+                           <el-button type="primary" @click="findAge()">按年龄分类</el-button>
+                       </el-row>
+                   </div>
+            <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+            <div id="chart1" style="height:600px;">
+
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<!-- 引入组件库 -->
+<script src="../js/vue.js"></script>
+<script src="../plugins/elementui/index.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
+<script type="text/javascript">
+
+   new Vue({
+       el:"#app",
+       methods:{
+           findSex() {
+               var myEcahrts =echarts.init(document.getElementById("chart1"));
+               axios.get("/member/findSex.do").then((val)=>{
+                   myEcahrts.setOption({
+                       tooltip: {
+                           trigger: 'item',
+                           formatter: "{a} <br/>{b}: {c} ({d}%)"
+                       },
+                       legend: {
+                           orient: 'vertical',
+                           x: 'left',
+                           data:val.data.data.sexName
+                       },
+                       series: [
+                           {
+                               name:'访问来源',
+                               type:'pie',
+                               radius: ['50%', '70%'],
+                               avoidLabelOverlap: false,
+                               label: {
+                                   normal: {
+                                       show: false,
+                                       position: 'center'
+                                   },
+                                   emphasis: {
+                                       show: true,
+                                       textStyle: {
+                                           fontSize: '30',
+                                           fontWeight: 'bold'
+                                       }
+                                   }
+                               },
+                               labelLine: {
+                                   normal: {
+                                       show: false
+                                   }
+                               },
+                               data:val.data.data.sexCount,
+                           }
+                       ]
+                   });
+               });
+           },
+           findAge(){
+               var myEcahrts =echarts.init(document.getElementById("chart1"));
+               axios.get("/member/findAge.do").then((val)=>{
+                   myEcahrts.setOption({
+                       tooltip: {
+                           trigger: 'item',
+                           formatter: "{a} <br/>{b}: {c} ({d}%)"
+                       },
+                       legend: {
+                           orient: 'vertical',
+                           x: 'left',
+                           data:val.data.data.ageGroup
+                       },
+                       series: [
+                           {
+                               name:'访问来源',
+                               type:'pie',
+                               radius: ['50%', '70%'],
+                               avoidLabelOverlap: false,
+                               label: {
+                                   normal: {
+                                       show: false,
+                                       position: 'center'
+                                   },
+                                   emphasis: {
+                                       show: true,
+                                       textStyle: {
+                                           fontSize: '30',
+                                           fontWeight: 'bold'
+                                       }
+                                   }
+                               },
+                               labelLine: {
+                                   normal: {
+                                       show: false
+                                   }
+                               },
+                               data:val.data.data.ageCount,
+                           }
+                       ]
+                   });
+               });
+           }
+       },
+   })
+
+
+
+
+
+
+</script>
+
+</body>
+</html>

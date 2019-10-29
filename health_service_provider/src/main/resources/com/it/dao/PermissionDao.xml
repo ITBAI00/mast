@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.dao.PermissionDao">
+    <!--根据角色id查询具有的权限-->
+    <select id="findByRoleId" parameterType="int" resultType="com.it.pojo.Permission">
+        select p.*
+            from t_permission p, t_role_permission rp
+            where p.id = rp.permission_id and rp.role_id = #{roleId}
+    </select>
+
+    <!--根据条件查询-->
+    <select id="selectByCondition" parameterType="string" resultType="com.it.pojo.Permission">
+        select * from t_permission
+        <if test="value != null and value.length > 0">
+            where name=#{value} or keyword=#{value}
+        </if>
+    </select>
+
+    <!--添加权限-->
+    <insert id="add" parameterType="com.it.pojo.Permission">
+        insert into t_permission(name,keyword,description) values(#{name},#{keyword},#{description})
+    </insert>
+
+    <!--编辑权限-->
+    <update id="edit" parameterType="com.it.pojo.Permission">
+        update t_permission
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="keyword != null">
+                keyword = #{keyword},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--查询权限是否和角色相关-->
+    <select id="findCountByPermissionId" parameterType="int" resultType="long">
+        select count(*) from t_role_permission where permission_id=#{permission_id}
+    </select>
+
+    <!--删除-->
+    <delete id="delete" parameterType="int">
+        delete from t_permission where id=#{id}
+    </delete>
+
+    <select id="findAll" resultType="com.it.pojo.Permission">
+        select * from t_permission
+    </select>
+
+</mapper>

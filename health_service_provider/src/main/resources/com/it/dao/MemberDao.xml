@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.dao.MemberDao">
+    <!--添加会员-->
+    <insert id="add" parameterType="com.it.pojo.Member">
+        <selectKey resultType="int" order="AFTER" keyProperty="id">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+         insert into t_member (fileNumber,name,sex,idCard,phoneNumber,regTime,password,email,birthday,remark)
+            values
+            (#{fileNumber},#{name},#{sex},#{idCard},#{phoneNumber},#{regTime},#{password},#{email},#{birthday},#{remark})
+    </insert>
+
+    <!--根据电话号查询会员-->
+    <select id="findByTelephone" parameterType="string" resultType="com.it.pojo.Member">
+        select * from t_member where phoneNumber = #{phoneNumber}
+    </select>
+
+    <!--通过月份查找当前会员总数-->
+    <select id="findMemberCountBeforeDate" parameterType="string" resultType="int">
+        select count(id) from t_member where regTime &lt;= #{value}
+    </select>
+
+    <!--获取当天新增会员人数-->
+    <select id="findMemberCountByDate" parameterType="string" resultType="int">
+        select count(id) from t_member where regTime = #{value}
+    </select>
+
+    <!--获取会员的总人数-->
+    <select id="findMemberTotalCount" resultType="int">
+        select count(id) from t_member
+    </select>
+
+    <!--根据日期统计会员数，统计指定日期之前的会员数-->
+    <select id="findMemberCountAfterDate" parameterType="string" resultType="int">
+        select count(id) from t_member where regTime &gt;= #{value}
+    </select>
+
+    <select id="findSex" resultType="map">
+     select
+     count(id) value,
+     (case when sex=0 then '女' else '男' end) name
+      from t_member group by sex;
+    </select>
+
+    <select id="findAge" resultType="map">
+        select count(*) value,(case when age between 0 and 18 then '0-18' when age between 18 and 30 then '18-30' when age BETWEEN 30 and 50 then '30-50' when age > 50 then '50以上' end) name
+        from t_member
+        GROUP BY (case when age between 0 and 18 then '0-18' when age between 18 and 30 then '18-30' when age BETWEEN 30 and 50 then '30-50' when age > 50 then '50以上' end)
+    </select>
+</mapper>
